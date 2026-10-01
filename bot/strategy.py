@@ -13,8 +13,11 @@ Scoring (BUY shown; SELL is the mirror image):
   10  ADX >= 20          (market is trending, not ranging)
  -10  Over-extended      (close outside the Bollinger Band)
 
-Hard filters: H1 trend must not point the other way, the signal candle must
-close in the trade direction, RSI must not be extreme (>75 buy / <25 sell).
+Hard filters: H1 trend must agree (REQUIRE_H1_TREND), M15 EMAs must be aligned
+(REQUIRE_M15_STRUCTURE), no entry after a close outside the Bollinger Band
+(SKIP_IF_STRETCHED), the signal candle must close in the trade direction, and
+RSI must not be extreme (>75 buy / <25 sell). Gold needs a higher score
+(MIN_SCORE_BY_SYMBOL).
 """
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -55,14 +58,21 @@ def score_side(d, m15, h1_bias, h4_bias):
     """Score one direction. d = +1 for BUY, -1 for SELL. Returns (score, reasons)."""
     if h1_bias == -d:
         return 0, []
+    if getattr(config, "REQUIRE_H1_TREND", False) and h1_bias != d:
+        return 0, []
 
     r = m15.iloc[-1]
-    p = m15.iloc[-2]
 
     # Hard filters
     if d * (r.close - r.open) <= 0:
         return 0, []
     if (d == 1 and r.rsi > 75) or (d == -1 and r.rsi < 25):
+        return 0, []
+    if getattr(config, "REQUIRE_M15_STRUCTURE", False) and not (
+            d * (r.ema20 - r.ema50) > 0 and d * (r.close - r.ema20) > 0):
+        return 0, []
+    if getattr(config, "SKIP_IF_STRETCHED", False) and (
+            (d == 1 and r.close > r.bb_up) or (d == -1 and r.close < r.bb_low)):
         return 0, []
 
     word = "up" if d == 1 else "down"
@@ -149,7 +159,8 @@ def analyze(symbol, m15, h1, h4, prices=None, digits=None, timeframe_minutes=15)
     else:
         side, score, reasons = "SELL", sell_score, sell_reasons
 
-    if score < config.MIN_SCORE:
+    min_score = getattr(config, "MIN_SCORE_BY_SYMBOL", {}).get(symbol, config.MIN_SCORE)
+    if score < max(min_score, config.MIN_SCORE):
         return None
 
     close = float(m15["close"].iloc[-1])

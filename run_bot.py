@@ -49,6 +49,13 @@ def can_signal(base, symbol, feed, db, now):
     last = db.last_signal_time(base)
     if last and now - datetime.fromisoformat(last) < timedelta(minutes=ENTRY_MINUTES * config.COOLDOWN_BARS):
         return False
+    loss_hours = getattr(config, "LOSS_COOLDOWN_HOURS", 0)
+    if loss_hours:
+        since = now - timedelta(hours=loss_hours)
+        recent = db.closed_between(since.isoformat(), (now + timedelta(minutes=1)).isoformat())
+        if any(t["symbol"] == base and t["status"] == "SL" for t in recent):
+            log.info("%s skipped: stop loss hit in the last %sh", base, loss_hours)
+            return False
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     if db.count_since(day_start.isoformat()) >= config.MAX_SIGNALS_PER_DAY:
         return False

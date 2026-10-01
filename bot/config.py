@@ -39,7 +39,11 @@ BIAS_TF = "H4"     # higher-timeframe bias (bonus points)
 BARS = {"M15": 500, "H1": 400, "H4": 300}
 
 # --- Strategy ------------------------------------------------------------------
-MIN_SCORE = 65            # 0-100; raise for fewer, stronger signals
+MIN_SCORE = 70            # 0-100; raise for fewer, stronger signals
+MIN_SCORE_BY_SYMBOL = {"XAUUSD": 80}   # gold is noisier on M15: demand more confluence
+REQUIRE_H1_TREND = True        # H1 trend must agree (not just "not against")
+REQUIRE_M15_STRUCTURE = True   # M15 EMA20/50 must be aligned with the trade
+SKIP_IF_STRETCHED = True       # no entry when price already closed outside the Bollinger Band
 ATR_PERIOD = 14
 SL_ATR_MULT = 1.5         # minimum stop distance = 1.5 x ATR
 SL_ATR_MAX = 3.0          # never wider than 3 x ATR
@@ -52,6 +56,7 @@ SESSION_START_UTC = 7     # London open
 SESSION_END_UTC = 20      # New York afternoon
 MAX_SPREAD_PIPS = {"EURUSD": 2.0, "GBPUSD": 2.5, "USDJPY": 2.0, "XAUUSD": 4.0}
 COOLDOWN_BARS = 8         # wait 8 x M15 = 2h after a signal on the same pair
+LOSS_COOLDOWN_HOURS = 6   # after a Stop Loss on a pair, no new signal on that pair for 6h
 MAX_SIGNALS_PER_DAY = 8
 SIGNAL_EXPIRY_HOURS = 24  # close tracking of a signal after this long
 
