@@ -33,7 +33,7 @@ TELEGRAM_CHAT_ID = _env("TELEGRAM_CHAT_ID")  # "@yourchannel" or "-100..." or yo
 
 # --- Markets -------------------------------------------------------------------
 # XAUUSD paused: 3 of 3 live gold signals hit Stop Loss. Add it back only if a backtest says so.
-SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY"]
+SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY", "USDCAD"]
 ENTRY_TF = "M15"   # signal timeframe
 TREND_TF = "H1"    # must not oppose the trade
 BIAS_TF = "H4"     # higher-timeframe bias (bonus points)
@@ -55,7 +55,7 @@ MOVE_SL_TO_BE_AFTER_TP1 = True
 # --- Filters -------------------------------------------------------------------
 SESSION_START_UTC = 7     # London open
 SESSION_END_UTC = 20      # New York afternoon
-MAX_SPREAD_PIPS = {"EURUSD": 2.0, "GBPUSD": 2.5, "USDJPY": 2.0, "XAUUSD": 4.0}
+MAX_SPREAD_PIPS = {"EURUSD": 2.0, "GBPUSD": 2.5, "USDJPY": 2.0, "USDCAD": 2.5, "XAUUSD": 4.0}
 COOLDOWN_BARS = 8         # wait 8 x M15 = 2h after a signal on the same pair
 LOSS_COOLDOWN_HOURS = 6   # after a Stop Loss on a pair, no new signal on that pair for 6h
 MAX_SIGNALS_PER_DAY = 8
@@ -79,6 +79,6 @@ SUPABASE_TABLE = _env("SUPABASE_TABLE", "bot_signals")
 PORT = _env("PORT", None, int)   # Render sets PORT automatically; empty = no web server
 
 # --- Backtest / API spread ---------------------------------------------------------
-BACKTEST_SPREAD_PIPS = {"EURUSD": 1.0, "GBPUSD": 1.3, "USDJPY": 1.0, "XAUUSD": 3.0}
+BACKTEST_SPREAD_PIPS = {"EURUSD": 1.0, "GBPUSD": 1.3, "USDJPY": 1.0, "USDCAD": 1.5, "XAUUSD": 3.0}
 # The API gives one mid price, so entries add this typical broker spread
 ASSUMED_SPREAD_PIPS = BACKTEST_SPREAD_PIPS
