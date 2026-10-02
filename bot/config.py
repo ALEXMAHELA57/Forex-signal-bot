@@ -32,7 +32,8 @@ TELEGRAM_BOT_TOKEN = _env("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = _env("TELEGRAM_CHAT_ID")  # "@yourchannel" or "-100..." or your user id
 
 # --- Markets -------------------------------------------------------------------
-SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY", "XAUUSD"]
+# XAUUSD paused: 3 of 3 live gold signals hit Stop Loss. Add it back only if a backtest says so.
+SYMBOLS = ["EURUSD", "GBPUSD", "USDJPY"]
 ENTRY_TF = "M15"   # signal timeframe
 TREND_TF = "H1"    # must not oppose the trade
 BIAS_TF = "H4"     # higher-timeframe bias (bonus points)
